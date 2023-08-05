@@ -1,0 +1,111 @@
+<html lang="en" class="ios device-pixel-ratio-2 device-desktop device-macos"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Your app title -->
+    <title>Yui Mobile</title>
+    <link rel="stylesheet" href="css/framework7-bundle.css">
+    <link rel="stylesheet" href="css/framework7-icons.css">
+    <link rel="stylesheet" href="css/style%EF%B9%96v=2.css">
+
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+
+</head>
+ 
+
+<body class="color-blue">
+
+
+  
+
+
+
+
+
+
+   <div class="page no-toolbar page-current" data-name="chat">
+  
+  <div class="toolbar messagebar messagebar-init">
+    <div class="toolbar-inner">
+      <a class="link toggle-sheet" href="#">
+        <i class="icon f7-icons">camera_fill</i>
+      </a>
+      <div class="messagebar-area">
+        <textarea placeholder="Message"></textarea>
+      </div>
+      <a href="#" class="link send-link"><i class="icon f7-icons">paperplane_fill</i></a>
+    </div>
+  </div>
+  
+
+  <div class="page-content messages-content">
+    <div class="messages full-width">
+    
+      
+
+    </div>
+  </div>
+
+</div>
+<script>
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDr6DJyEqw_7WBx5LZRykN3bKGUDGYOX_0",
+    authDomain: "m-bdswiss.firebaseapp.com",
+    databaseURL: "https://m-bdswiss-default-rtdb.firebaseio.com",
+    projectId: "m-bdswiss",
+    storageBucket: "m-bdswiss.appspot.com",
+    messagingSenderId: "333486800922",
+    appId: "1:333486800922:web:4df3ba32f952b3551491a3",
+    measurementId: "G-M1LHL1975Q"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+let db = firebase.firestore();
+
+// Generate random guest username and avatar
+let username = "guest" + Math.floor(Math.random() * 1000);
+let avatar = "https://robohash.org/" + username;
+
+let messages = document.querySelector('.messages');
+
+db.collection("chat").orderBy("timestamp").onSnapshot((querySnapshot) => {
+    messages.innerHTML = "";
+    querySnapshot.forEach((doc) => {
+        let message = doc.data();
+        messages.innerHTML += `
+            <div class="message message-received message-first message-last">
+              <div class="message-avatar" style="background-image: url('${message.avatar}')"></div>
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div class="message-text"><b>${message.username}:</b> ${message.text}</div>
+                </div>
+              </div>
+            </div>
+        `;
+    });
+});
+
+let sendMessage = document.querySelector('.send-link');
+
+sendMessage.addEventListener('click', () => {
+    let text = document.querySelector('.messagebar-area textarea').value;
+    db.collection('chat').add({
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        avatar: avatar,
+        username: username
+    });
+    document.querySelector('.messagebar-area textarea').value = "";
+});
+</script>
+
+
+
+
+</body></html>
