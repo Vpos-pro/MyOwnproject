@@ -9,34 +9,56 @@
     <link rel="stylesheet" href="css/framework7-bundle.css">
     <link rel="stylesheet" href="css/framework7-icons.css">
     <link rel="stylesheet" href="css/style%EF%B9%96v=2.css">
-    <style>
-      @keyframes placeHolderShimmer{
-    0%{
-        background-position: -468px 0
-    }
-    100%{
-        background-position: 468px 0
-    }
+
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<style>
+   @keyframes placeHolderShimmer {
+  0% {
+    background-position: -800px 0
+  }
+  100% {
+    background-position: 800px 0
+  }
 }
 
 .animated-background {
-    animation-duration: 1.25s;
-    animation-fill-mode: forwards;
-    animation-iteration-count: infinite;
-    animation-name: placeHolderShimmer;
-    animation-timing-function: linear;
-    background: #f6f7f8;
-    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
-    background-size: 800px 104px;
-    position: relative;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: placeHolderShimmer;
+  animation-timing-function: linear;
+  background-color: #f6f7f8;
+  background: linear-gradient(to right, #eeeeee 8%, #bbbbbb 18%, #eeeeee 33%);
+  background-size: 800px 104px;
+  height: 70px;
+  position: relative;
 }
 
-    </style>
+.background-masker {
+  background-color: #fff;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.btn-divide-left {
+  top: 0;
+  left: 25%;
+  height: 100%;
+  width: 5%;
+}
+
+</style>
+
 </head>
-  <body class="color-blue">
+ 
 
-
-
+<body class="color-blue">
 
 
 <div class="navbar navbar-current">
@@ -63,25 +85,20 @@
 </script>
 
 
-    <!-- App root element -->
-  
- 
-   
 
 
-        <div class="page page-current">
-  
-<script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.27.0/date-fns.min.js"></script>
 
+<div class="page-content">
+    <div id="date" class="single-post-date"></div>
+    <h1 id="title" class="single-post-title"></h1>
+    <img id="image" src="img/cards/1.jpg" alt="" class="single-cover-image">
+    <span id="categoryName" class="single-post-category"></span>
+    <div  id="content" class="single-post-content">
+        <p>
+           
 
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
-
-<div class="page-content" >
-  
-
-
-<div class="single-post-content" id="news-detail"></div>
+        </p>
+    </div>
 
 <script>
     // Your web app's Firebase configuration
@@ -95,231 +112,232 @@
         appId: "1:333486800922:web:4df3ba32f952b3551491a3",
         measurementId: "G-M1LHL1975Q"
     };
-
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
-    // Get the news ID from the URL query string
-    var urlParams = new URLSearchParams(window.location.search);
-    var newsId = urlParams.get('id');
+    // Extract the ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const newsId = urlParams.get('id');
 
-    function loadNewsDetail() {
-        var newsDetail = document.querySelector('#news-detail');
+    // Fetch the news from Firestore using the ID
+// Fetch the news from Firestore using the ID
+// Fetch the news from Firestore using the ID
+db.collection("news").doc(newsId).get().then((doc) => {
+    if (doc.exists) {
+        const data = doc.data();
 
-        // Display skeleton loaders while fetching the data
-        newsDetail.innerHTML = `
-        <div class="single-post-date animated-background" style="width: 100px; height: 20px;"></div>
-        <h1 class="single-post-title animated-background" style="width: 100%; height: 30px;"></h1>
-        <div class="animated-background" style="width: 100%; height: 200px;"></div>
-        <span class="single-post-category animated-background" style="width: 100px; height: 20px;"></div>
-        `;
+        // Format the date
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = new Date(data.date).toLocaleDateString(undefined, options);
 
-        // Fetch the news from Firestore
-        db.collection('news').doc(newsId).get()
-            .then((doc) => {
-                if (doc.exists) {
-                    // Fetch the user
-                    var userId = doc.data().userId;  // Fetch the userId from the news document
-                    console.log("User ID:", userId);
-                    db.collection('users').doc(userId).get()  // Fetch the user from Firestore
-                        .then((userDoc) => {
-                            if (userDoc.exists) {
-                                var userName = userDoc.data().username;
-                                var userImage = userDoc.data().avatar;
-                                var userDescription = userDoc.data().auther;
-                                console.log("User Data:", userDoc.data());
+        document.getElementById("date").innerText = formattedDate;
+        document.getElementById("title").innerText = data.title;
+        document.getElementById("image").src = data.image;
+        document.getElementById("categoryName").innerText = data.categoryName;
+        document.getElementById("content").innerHTML = `<p>${data.content}</p>`;
 
-                                // Display the news detail
-                                newsDetail.innerHTML = `
-                                <div class="single-post-date">${doc.data().date}</div>
-                                <h1 class="single-post-title">${doc.data().title}</h1>
-                                <img src="${doc.data().image}" alt="" class="single-cover-image">
-                                <span class="single-post-category">${doc.data().categoryName}</span>
-                                <div class="single-post-content">${doc.data().content}</div>
-                                <div class="single-post-author">
-                                <img src="${userImage}" alt="">
-                                <div class="author-details">
-                                    <div class="author-name">${userName}
-                                    <i class="icon f7-icons text-color-blue verified-badge">checkmark_seal_fill</i>
-                                    </div>
-                                    <div class="author-description">${userDescription}</div>
-                                </div>
-                                </div>`;
+        console.log("Fetching user with username:", data.userId); // Debug log
 
-                                // Update the 'views' count
-                                db.collection('news').doc(newsId).update({
-                                    views: firebase.firestore.FieldValue.increment(1)
-                                });
-
-                            } else {
-                                console.log("No such user!");
-                            }
-                        }).catch((error) => {
-                            console.log("Error getting user:", error);
-                        });
-                } else {
-                    console.log("No such document!");
-                }
-            }).catch((error) => {
-                console.log("Error getting document:", error);
-            });
-    }
-
-    // Call the function to load the news detail
-    loadNewsDetail();
-
-</script>
-
-
-
-
-
-
-
-<div id="comments-container">
-    <h2 class="title-bottom-line">
-        Comments
-        <span class="badge color-dark comment-count">0</span>
-    </h2>
-    <div class="comment-list">
-        <!-- Comments will be inserted here -->
-    </div>
-</div>
-
-
-
-<h2 class="title-bottom-line">Leave a Comment</h2>
-
-<form>
-    <div class="grid grid-cols-2 grid-gap no-margin">
-        <input type="text" id="name" name="name" placeholder="Your Name">
-        <input type="email" id="email-2" name="email-2" placeholder="Your Email">
-    </div>
-    <textarea placeholder="Your comment here" id="comment"></textarea>
-    <button type="submit" class="button button-fill button-round color-dark">Send</button>
-</form>
-
-
-
-
-
-</div>
-<script>
-
-    // Get the news ID from the URL query string
-    var urlParams = new URLSearchParams(window.location.search);
-    var newsId = urlParams.get('id');
-
-    // Get references to the form elements
-    var form = document.querySelector('form');
-    var nameInput = document.querySelector('#name');
-    var emailInput = document.querySelector('#email-2');
-    var commentInput = document.querySelector('#comment');
-
-    // Handle form submission
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-
-        // Get the form values
-        var name = nameInput.value;
-        var email = emailInput.value;
-        var comment = commentInput.value;
-
-        // Save the comment to Firestore
-        db.collection('comments').add({
-            name: name,
-            email: email,
-            comment: comment,
-            newsId: newsId,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then((docRef) => {
-            // Comment saved, now save its ID to the corresponding news
-            db.collection('news').doc(newsId).update({
-                commentIds: firebase.firestore.FieldValue.arrayUnion(docRef.id)
-            })
-            .then(() => {
-                // Clear the form fields
-                nameInput.value = '';
-                emailInput.value = '';
-                commentInput.value = '';
-            });
-        })
-        .catch((error) => {
-            console.error("Error saving comment: ", error);
+        // Update the 'views' count for the news article
+        db.collection('news').doc(newsId).update({
+            views: firebase.firestore.FieldValue.increment(1)
+        }).then(() => {
+            console.log("Views incremented successfully!");
+        }).catch((error) => {
+            console.error("Error incrementing views:", error);
         });
-    });
-</script>
 
+        // Fetch the user data using the userId (which is the username) from the news article
+        return db.collection("users").doc(data.userId).get();
+    } else {
+        console.log("No such document!");
+        return Promise.reject("No such document!");
+    }
+}).then((userDoc) => {
+    if (userDoc.exists) {
+        const userData = userDoc.data();
+        document.getElementById("avatar").src = userData.avatar;
+        document.getElementById("username").innerText = userData.username;
+        document.getElementById("Occupation").innerText = userData.Occupation;
 
-
-
-</div>
-
-     
-
-
-
-
-<script>
-// Get the news ID from the URL query string
-var urlParams = new URLSearchParams(window.location.search);
-var newsId = urlParams.get('id');
-
-// Get references to the comments container elements
-var commentsContainer = document.querySelector('#comments-container');
-var commentList = commentsContainer.querySelector('.comment-list');
-var commentCount = commentsContainer.querySelector('.comment-count');
-
-// Fetch the comments from Firestore
-db.collection('comments').where('newsId', '==', newsId).get().then((querySnapshot) => {
-    var commentCountValue = 0;
-
-    querySnapshot.forEach((doc) => {
-        var comment = doc.data();
-
-        // Convert Firestore timestamp to JavaScript Date object
-        var timestamp = comment.timestamp.toDate();
-
-        // Format the timestamp as 'HH:MM, DD/MM/YYYY'
-        var commentDate = timestamp.getHours() + ':' +
-                          ('0' + timestamp.getMinutes()).slice(-2) + ', ' +
-                          ('0' + timestamp.getDate()).slice(-2) + '/' +
-                          ('0' + (timestamp.getMonth() + 1)).slice(-2) + '/' +
-                          timestamp.getFullYear();
-
-        var avatarURL = 'https://robohash.org/' + encodeURIComponent(comment.name) + '?size=100x100';
-        var commentElement = document.createElement('div');
-        commentElement.classList.add('comment');
-        commentElement.innerHTML = `
-            <img src="${avatarURL}" alt="">
-            <div class="comment-infos">
-                <div class="comment-header">
-                    <div class="comment-header-left">
-                        <div class="author-name">${comment.name}</div>
-                        <div class="comment-date">• ${commentDate}</div>
-                    </div>
-                    <div class="comment-options">
-                        <a href="#" class="link"><i class="icon f7-icons">ellipsis_vertical</i></a>
-                    </div>
-                </div>
-                <div class="comment-text">${comment.comment}</div>
-            </div>
-        `;
-        commentList.appendChild(commentElement);
-        commentCountValue++;
-    });
-
-    // Update the comment count
-    commentCount.textContent = commentCountValue;
+        // Fetch comments after fetching the news data
+        fetchComments();
+    } else {
+        console.log("No such user with username:", userDoc.id); // Debug log
+    }
+}).catch((error) => {
+    console.log("Error:", error);
 });
 
+
+
+
 </script>
 
 
 
+
+
+
+
+
+    <div class="single-post-author">
+      <img id="avatar" src="img/avatars/11.jpg" alt="">
+      <div class="author-details">
+        <div id="username" class="author-name">
+          Emily Wilson
+          <i class="icon f7-icons text-color-blue verified-badge">checkmark_seal_fill</i>
+        </div>
+        <div id="Occupation" class="author-description">Author &amp; Journalist</div>
       </div>
+      <a href="#" class="button button-fill button-round color-dark button-icon-left author-follow">
+        <i class="icon f7-icons">plus</i>
+        Follow
+      </a>
+    </div>
+
+
+
+<h2 class="title-bottom-line">
+    Comments
+    <span id="number-of-comments" class="badge color-dark comment-count">23</span>
+</h2>
+<div class="comment-list">
+    <div class="comment">
+        <img src="img/avatars/3.jpg" alt="">
+        <div class="comment-infos">
+            <div class="comment-header">
+                <div class="comment-header-left">
+                    <div id="name-of-who-comment" class="author-name">Noah Campbell</div>
+                    <div class="comment-date">• 12m</div>
+                </div>
+                <div class="comment-options">
+                    <a href="#" class="link"><i class="icon f7-icons">ellipsis_vertical</i></a>
+                </div>
+            </div>
+            <div id="comment-content" class="comment-text">Great article! You made some really good points and I appreciate the time and effort you put into it, thank you.</div>
+        </div>
+    </div>
+</div>
+<h2 class="title-bottom-line">Leave a Comment</h2>
+<form>
+    <div class="grid grid-cols-2 grid-gap no-margin">
+        <input id="commenter-name" type="text" name="name" placeholder="Your Name">
+        <input id="commenter-email" type="email" name="email" placeholder="Your Email">
+    </div>
+    <textarea id="typecomment" placeholder="Your comment here"></textarea>
+    <a id="send" href="#" class="button button-fill button-round color-dark">Send</a>
+</form>
+</div>
+
+<script>
+
+    function formatDate(isoString) {
+    const date = new Date(isoString);
+    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleDateString(undefined, options);
+}
+
+function fetchComments() {
+    db.collection("comments").where("newsId", "==", newsId).onSnapshot((snapshot) => {
+        const commentList = document.querySelector(".comment-list");
+        commentList.innerHTML = ''; // Clear existing comments
+
+        snapshot.forEach(doc => {
+            const commentData = doc.data();
+const commentElement = `
+    <div class="comment">
+        <img src="${commentData.avatar || 'path/to/default/avatar.jpg'}" alt="">
+        <div class="comment-infos">
+            <div class="comment-header">
+                <div class="comment-header-left">
+                    <div class="author-name">${commentData.name}</div>
+                    <div class="comment-date">• ${formatDate(commentData.date)}</div>
+                </div>
+                <div class="comment-options">
+                    <a href="#" class="link"><i class="icon f7-icons">ellipsis_vertical</i></a>
+                </div>
+            </div>
+            <div class="comment-text">${commentData.comment}</div>
+        </div>
+    </div>
+`;
+
+            commentList.innerHTML += commentElement;
+        });
+
+        // Update the number of comments
+        document.getElementById("number-of-comments").innerText = snapshot.size;
+    });
+}
+
+
+
+
+document.getElementById("send").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const nameInput = document.getElementById("commenter-name");
+    const emailInput = document.getElementById("commenter-email");
+    const commentTextarea = document.getElementById("typecomment");
+
+    const name = nameInput.value;
+    const email = emailInput.value;
+    const commentText = commentTextarea.value;
+
+    // First, add the comment to the comments collection
+    db.collection("comments").add({
+        name: name,
+        email: email,
+        comment: commentText,
+        newsId: newsId,
+        date: new Date().toISOString(),
+        avatar: 'path/to/random/avatar.jpg'
+    }).then((docRef) => {
+        console.log("Comment added successfully with ID:", docRef.id);
+
+        // Clear the input fields
+        nameInput.value = '';
+        emailInput.value = '';
+        commentTextarea.value = '';
+
+        // Show success alert using SweetAlert
+
+
+        const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  }
+})
+
+Toast.fire({
+  icon: 'success',
+            title: 'Comment added!',
+            text: 'Your comment has been successfully added.',
+})
+
+    }).catch((error) => {
+        console.error("Error:", error);
+
+        // Show error alert using SweetAlert
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong! Please try again.',
+        });
+    });
+});
+
+
+</script>
+
 
 
 
@@ -349,12 +367,14 @@ switchers.forEach(switcher => {
     });
 });
 
+console.log("News ID:", newsId);
+
 
 </script>
-
-
     <script src="js/framework7-bundle.min.js"></script>
     <script src="js/app.js"></script>
   
 
-</body></html>
+</body>
+
+</html>
