@@ -112,6 +112,30 @@ var storage = firebase.storage();
                   
 
 
+<div class="navbar navbar-large navbar-current">
+                     <div class="navbar-bg"></div>
+                     <div class="navbar-inner">
+                        <div class="left">
+                           <a href="settings" class="link icon-only navbar-profile">
+                           <img src="" alt="">
+                           </a>
+                        </div>
+                        <div class="title" style="left: 14px;">Market cap</div>
+                        <div class="title-large">
+                           <div class="title-large-text">Market cap</div>
+                        </div>
+                        <div class="right">
+                           <a href="#" class="link icon-only switch-theme theme-switcher">
+                           <i class="icon f7-icons">moon_stars</i>
+                           </a>
+                        
+                        <a href="#tab-5" class="tab-link">
+<i class="icon f7-icons tooltip-init" data-tooltip="Setting">gear_alt</i>
+                           </a>
+                           
+                        </div>
+                     </div>
+                  </div>
 
 
                   <div class="page-content">
@@ -250,7 +274,7 @@ body {
 
 
             <!-- items -->
-            <div class="items flex flex-col gap-y-5 overflow-y-auto">
+            <div class="items flex flex-col gap-y-5 overflow-y-auto" style=" padding-top: 58px; ">
                 <!-- crypto items from js -->
             </div>
 
@@ -546,12 +570,11 @@ db.collection('users')
                            <a href="#" class="link icon-only switch-theme theme-switcher">
                            <i class="icon f7-icons">moon_stars</i>
                            </a>
-                           <a href="notifications" class="link icon-only">
-                           <i class="icon f7-icons">
-                           bell
-                           <span class="badge bg-color-primary">5</span>
-                           </i>
+                        
+                        <a href="#tab-5" class="tab-link" >
+<i class="icon f7-icons tooltip-init" data-tooltip="Setting">gear_alt</i>
                            </a>
+
                         </div>
                      </div>
                   </div>
@@ -593,10 +616,17 @@ db.collection('users')
   width: 5%;
 }
 
+
+body {
+    overflow-x: hidden;
+}
+
 </style>
 
-                  <div class="page-content">
 
+
+                  <div class="page-content">
+<div class="post-list" >
 <div class="swiper-container full-width" slides-per-view="1.2" space-between="15" slides-offset-after="15" slides-offset-before="15" speed="400">
     <div class="swiper-wrapper">
         <!-- Loading Slide -->
@@ -626,7 +656,7 @@ db.collection('users')
     </div>
   </a>
 </div>
-
+ </div>
     </div>
 </div>
 
@@ -639,7 +669,7 @@ function loadLatestNews() {
 
     db.collection('news')
         .orderBy('date', 'desc')
-        .limit(2)
+        .limit(3)
         .get()
         .then((querySnapshot) => {
             // Clear the default slide
@@ -1262,12 +1292,11 @@ window.onload = function() {
                            <a href="#" class="link icon-only switch-theme theme-switcher">
                            <i class="icon f7-icons">moon_stars</i>
                            </a>
-                           <a href="notifications" class="link icon-only">
-                           <i class="icon f7-icons">
-                           bell
-                           <span class="badge bg-color-primary">5</span>
-                           </i>
+
+                       <a href="#tab-5" class="tab-link" >
+<i class="icon f7-icons tooltip-init" data-tooltip="Setting">gear_alt</i>
                            </a>
+
                         </div>
                      </div>
                   </div>
@@ -1749,8 +1778,9 @@ window.onload = function() {
 </object>
 
 
-    <img onclick="changelink()" src="img/tap.png" alt="Right Icon" class="iframe-button">
-
+<button onclick="changelink()" class="iframe-button">
+    <img  src="img/tape.png" alt="Right Icon" >
+</button>
 
 
 
@@ -1783,10 +1813,11 @@ window.onload = function() {
                         <div class="right">
                            <a href="#" class="link icon-only switch-theme theme-switcher">
                            <i class="icon f7-icons">moon_stars</i>
-                           </a>
-                           <a href="notifications" class="link icon-only">
+                         
+                         <a href="#tab-5" class="tab-link" >
 <i class="icon f7-icons tooltip-init" data-tooltip="Setting">gear_alt</i>
                            </a>
+
                         </div>
                      </div>
                   </div>
