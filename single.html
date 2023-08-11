@@ -89,7 +89,7 @@
 
 
 <div class="page-content">
-    <div id="date" class="single-post-date"></div>
+    <div id="date" class="single-post-date">September 27, 2023</div>
     <h1 id="title" class="single-post-title"></h1>
     <img id="image" src="img/cards/1.jpg" alt="" class="single-cover-image">
     <span id="categoryName" class="single-post-category"></span>
@@ -139,21 +139,14 @@ db.collection("news").doc(newsId).get().then((doc) => {
 
         console.log("Fetching user with username:", data.userId); // Debug log
 
-        // Update the 'views' count for the news article
-        db.collection('news').doc(newsId).update({
-            views: firebase.firestore.FieldValue.increment(1)
-        }).then(() => {
-            console.log("Views incremented successfully!");
-        }).catch((error) => {
-            console.error("Error incrementing views:", error);
-        });
-
         // Fetch the user data using the userId (which is the username) from the news article
         return db.collection("users").doc(data.userId).get();
     } else {
         console.log("No such document!");
         return Promise.reject("No such document!");
     }
+// ... (your existing code to fetch news data)
+
 }).then((userDoc) => {
     if (userDoc.exists) {
         const userData = userDoc.data();
@@ -169,7 +162,6 @@ db.collection("news").doc(newsId).get().then((doc) => {
 }).catch((error) => {
     console.log("Error:", error);
 });
-
 
 
 
@@ -191,10 +183,7 @@ db.collection("news").doc(newsId).get().then((doc) => {
         </div>
         <div id="Occupation" class="author-description">Author &amp; Journalist</div>
       </div>
-      <a href="#" class="button button-fill button-round color-dark button-icon-left author-follow">
-        <i class="icon f7-icons">plus</i>
-        Follow
-      </a>
+   
     </div>
 
 
