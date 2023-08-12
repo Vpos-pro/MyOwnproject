@@ -554,7 +554,11 @@ db.collection('users')
 
             <div class="view view-init tab tab-active view-init" id="tab-2">
                <div class="page">
-                  <div class="navbar navbar-large">
+                
+
+
+
+                  <div class="navbar navbar-large" id="navbar-of-latest">
                      <div class="navbar-bg"></div>
                      <div class="navbar-inner">
                         <div class="left">
@@ -623,26 +627,36 @@ body {
 
 </style>
 
+<style>
+    #iframeContainerx button {
+        background-color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 10001;
+    }
+</style>
 
-
-                  <div class="page-content">
-<div class="post-list" >
-<div class="swiper-container full-width" slides-per-view="1.2" space-between="15" slides-offset-after="15" slides-offset-before="15" speed="400">
-    <div class="swiper-wrapper">
-        <!-- Loading Slide -->
-
-<div class="swiper-slide swiper-slide-active" role="group" aria-label="1 / 2" style="width: 342.5px; margin-right: 15px; margin-left: 10px;">
-  <a href="#" class="card external">
-    <div class="card-image">
-      <!-- Use a div to replace the image with a specific height -->
-      <div class="animated-background" style="height: 214px; width: 100%;"></div>
-      <div class="card-image-footer">
-        <div class="" style="height: 20px; width: 100px;"></div> <!-- replace the category with a placeholder -->
-        <div class="b" style="height: 30px; margin-top: 10px;"></div> <!-- replace the title with a placeholder -->
-      </div>
-    </div>
-  </a>
-</div>
+<div class="page-content">
+    <swiper-container class="full-width swiper-initialized swiper-horizontal swiper-ios swiper-backface-hidden" slides-per-view="1.2" space-between="15" slides-offset-after="15" slides-offset-before="15" speed="400">
+        <!-- Sample slides (can be dynamically generated) -->
+        <div class="swiper-slide" role="group" aria-label="1 / 2" style="width: 342.5px; margin-right: 15px; margin-left: 10px;">
+            <a href="#" class="card external">
+                <div class="card-image">
+                    <div class="animated-background" style="height: 214px; width: 100%;"></div>
+                    <div class="card-image-footer">
+                        <div style="height: 20px; width: 100px;"></div>
+                        <div class="b" style="height: 30px; margin-top: 10px;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
 
 <div class="swiper-slide swiper-slide-active" role="group" aria-label="2 / 2" style="width: 342.5px; margin-right: 15px; margin-left: 10px;">
   <a href="#" class="card external">
@@ -656,16 +670,12 @@ body {
     </div>
   </a>
 </div>
- </div>
-    </div>
-</div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true" slot="container-end"></span>
+ </swiper-container>
 
-
-
-
-                     <script>
+<script>
 function loadLatestNews() {
-    var swiperWrapper = document.querySelector('.swiper-wrapper');
+    var swiperContainer = document.querySelector('swiper-container');
 
     db.collection('news')
         .orderBy('date', 'desc')
@@ -673,23 +683,31 @@ function loadLatestNews() {
         .get()
         .then((querySnapshot) => {
             // Clear the default slide
-            swiperWrapper.innerHTML = '';
+            swiperContainer.innerHTML = '';
 
-            querySnapshot.forEach((doc) => {
+            querySnapshot.forEach((doc, index) => {
+                // Create swiper-slide div
                 var swiperSlide = document.createElement('div');
+                swiperSlide.setAttribute('role', 'group');
+                swiperSlide.setAttribute('aria-label', `${index + 1} / 3`);
                 swiperSlide.className = 'swiper-slide';
+                swiperSlide.style = 'width: 342.5px; margin-right: 15px;';
 
+                // Create the link
                 var link = document.createElement('a');
-                link.href = "single.html?id=" + doc.id;
+                link.setAttribute('onclick', `showIframex('single.html?id=${doc.id}')`);
                 link.className = "card external";
+             
 
+                // Create card image container
                 var cardImage = document.createElement('div');
                 cardImage.className = "card-image";
 
                 var img = document.createElement('img');
                 img.src = doc.data().image;
-                img.alt = "";
+                img.alt = doc.data().title;  // It's a good practice to use title or a description for alt
 
+                // Create card footer
                 var cardImageFooter = document.createElement('div');
                 cardImageFooter.className = "card-image-footer";
 
@@ -710,11 +728,10 @@ function loadLatestNews() {
 
                 swiperSlide.appendChild(link);
 
-                swiperWrapper.appendChild(swiperSlide);
+                swiperContainer.appendChild(swiperSlide);
             });
 
             // Initialize Swiper after dynamically adding slides
-            var swiperContainer = document.querySelector('.swiper-container');
             if (swiperContainer.swiper) {
                 swiperContainer.swiper.update();
             } else {
@@ -734,9 +751,30 @@ function loadLatestNews() {
 
 // Call the function to load the news
 loadLatestNews();
+</script>
 
-                        
-                     </script>
+
+    <div id="iframeContainerx" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;">
+        <iframe id="contentIframex" style="width: 100%; height: 100%; border: none;"></iframe>
+        <button onclick="closeIframex()" style="position: absolute; top: 10px; right: 10px; z-index: 10001;">X</button>
+    </div>
+
+    <script>
+function showIframex(url) {
+    document.getElementById('contentIframex').src = url;
+    document.getElementById('iframeContainerx').style.display = 'block';
+     document.getElementById('navbar-of-latest').style.display = 'none';
+}
+
+function closeIframex() {
+    document.getElementById('iframeContainerx').style.display = 'none';
+     document.getElementById('navbar-of-latest').style.display = 'block';
+}
+
+    </script>
+
+
+
                      <div class="section-title">
                         Popular Posts
                         <a href="categories.html" class="link external">View All</a>
@@ -824,15 +862,73 @@ loadPopularNews();
 
 
                      <div class="section-title">Post Of The Month</div>
-                     <a href="https://yui.xioyuna.com/single/" class="card">
+                    
+                     <a id="postofmonth" href="https://yui.xioyuna.com/single/" class="card">
                         <div class="card-image">
-                           <img src="img/cards/4.jpg" alt="">
+                           <img src="img/cards/5.jpg" alt="">
                            <div class="card-image-footer">
                               <div class="card-category bg-color-white">Science</div>
                               <h2>Exploring the Adaptations and Behaviors of these Majestic Birds</h2>
                            </div>
                         </div>
                      </a>
+<script>
+
+function loadRandomNews() {
+    const db = firebase.firestore();  // Ensure Firebase is properly initialized elsewhere in your code
+    
+    // Create a reference to the news collection
+    var newsRef = db.collection('news');
+    
+    // Fetch all document IDs (for better performance, maintain a separate array or list of IDs)
+    newsRef.get().then(snapshot => {
+        var allIds = snapshot.docs.map(doc => doc.id);
+        
+        // Get a random ID
+        var randomDocId = allIds[Math.floor(Math.random() * allIds.length)];
+
+        // Fetch the random document by its ID
+        return newsRef.doc(randomDocId).get();
+    }).then(doc => {
+        if (doc.exists) {
+            const newsData = doc.data();
+
+            // Assuming you have an existing anchor tag with id "postofmonth" in your HTML
+            const newsElement = document.getElementById('postofmonth');
+
+            // Update the href with the news link
+            newsElement.href = "single.html?id=" + doc.id;
+
+            // Update the image and its content based on fetched news data
+            const cardImageDiv = newsElement.querySelector('.card-image');
+            const newsImage = cardImageDiv.querySelector('img');
+            newsImage.src = newsData.image || "img/cards/4.jpg"; // Use default image if news does not have one
+            
+            const cardImageFooterDiv = cardImageDiv.querySelector('.card-image-footer');
+            
+            const cardCategoryDiv = cardImageFooterDiv.querySelector('.card-category');
+            cardCategoryDiv.textContent = newsData.categoryName || "Unknown Category";
+            
+            const newsTitle = cardImageFooterDiv.querySelector('h2');
+            newsTitle.textContent = newsData.title || "Unknown Title";
+        } else {
+            console.log("No such document!");
+        }
+    }).catch(error => {
+        console.log("Error getting random news:", error);
+    });
+}
+
+// Call the function to load the random news
+loadRandomNews();
+
+</script>
+
+
+
+
+
+
                      <div class="section-title">
                         <span id="random-category-name"></span>
                         <a href="" id="view-all-link" class="link external">View All</a>
@@ -920,37 +1016,11 @@ loadPopularNews();
 });
 
                      </script>
-                     <div class="section-title">Trending Topics</div>
-                     <swiper-container class="full-width categories-slider" slides-per-view="auto" space-between="10"
-                        slides-offset-after="15" slides-offset-before="15" speed="400">
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Sports</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Technology</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Politics</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Economics</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Science</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Fashion</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Art</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Music</a>
-                        </swiper-slide>
-                        <swiper-slide>
-                           <a href="#" data-href="/post-list/" class="link category-slide">Travel</a>
-                        </swiper-slide>
-                     </swiper-container>
+               
+
+
+
+
                      <div class="section-title">
                         Suggested Categories
                         <a href="categories.html" class="link external">Browse All</a>
@@ -1800,7 +1870,11 @@ window.onload = function() {
 
             <div class="view view-init tab" id="tab-5">
                <div class="page">
-                  <div class="navbar navbar-large">
+               
+
+
+
+<!--                   <div class="navbar navbar-large">
                      <div class="navbar-bg"></div>
                      <div class="navbar-inner">
                         <div class="left">
@@ -1820,7 +1894,7 @@ window.onload = function() {
 
                         </div>
                      </div>
-                  </div>
+                  </div> -->
                  
 
                   <div class="page-content">
@@ -1948,15 +2022,7 @@ window.onload = function() {
 
     <div class="list links-list colored-icons-list settings-list list-outline list-dividers full-width">
       <ul>
-        <li>
-          <a href="#" class="">
-            <div class="colored-icon blue">
-              <i class="icon f7-icons">globe</i>
-            </div>
-            Language
-            <div class="item-after">English</div>
-          </a>
-        </li>
+
         <li class="item-content">
           <div class="item-inner">
             <div class="colored-icon red">
@@ -1971,34 +2037,8 @@ window.onload = function() {
             </div>
           </div>
         </li>
-        <li class="item-content">
-          <div class="item-inner">
-            <div class="colored-icon orange">
-              <i class="icon f7-icons">location_fill</i>
-            </div>
-            <div class="item-title">Location</div>
-            <div class="item-after">
-              <label class="toggle toggle-init color-green">
-                <input type="checkbox" checked="">
-                <span class="toggle-icon"></span>
-              </label>
-            </div>
-          </div>
-        </li>
-        <li class="item-content">
-          <div class="item-inner">
-            <div class="colored-icon blue">
-              <i class="icon f7-icons">hand_raised_fill</i>
-            </div>
-            <div class="item-title">Private Mode</div>
-            <div class="item-after">
-              <label class="toggle toggle-init color-green">
-                <input type="checkbox">
-                <span class="toggle-icon"></span>
-              </label>
-            </div>
-          </div>
-        </li>
+       
+
         <li class="item-content">
           <div class="item-inner">
             <div class="colored-icon pink">
@@ -2014,22 +2054,14 @@ window.onload = function() {
           </div>
         </li>
         <li>
-          <a href="#" class="">
+          <a href="#" onclick="showIframe('privacy.html')" >
             <div class="colored-icon blue">
               <i class="icon f7-icons">shield_lefthalf_fill</i>
             </div>
             Privacy &amp; Security
           </a>
         </li>
-        <li>
-          <a href="#" class="">
-            <div class="colored-icon orange">
-              <i class="icon f7-icons">arrow_2_circlepath</i>
-            </div>
-            Updates
-            <div class="item-after">Automatic</div>
-          </a>
-        </li>
+  
         <li>
           <a href="#" class="">
             <div class="colored-icon gray">
@@ -2039,14 +2071,73 @@ window.onload = function() {
             <div class="item-after">v2.3.7</div>
           </a>
         </li>
+      
+
+
         <li>
-          <a href="#">
+          <a href="#" onclick="showIframe('terms.html')" >
             <div class="colored-icon green">
               <i class="icon f7-icons">doc_text_fill</i>
             </div>
             Terms Of Service
           </a>
         </li>
+
+     
+<style>
+    #iframeContainer button {
+        background-color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 10001;  /* Increase the z-index */
+    }
+</style>
+
+<!-- Help Center link -->
+<li>
+    <a href="#" onclick="showIframe('support.html')" class="external">
+        <div class="colored-icon pink">
+            <i class="icon f7-icons">question_square_fill</i>
+        </div>
+        Help Center
+    </a>
+</li>
+
+<!-- Contact Us link -->
+<li>
+    <a href="#" onclick="showIframe('contact.html')" class="external">
+        <div class="colored-icon pink">
+            <i class="icon f7-icons">envelope_fill</i>
+        </div>
+        Contact Us
+    </a>
+</li>
+
+<!-- Iframe container -->
+<div id="iframeContainer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;">
+    <iframe id="contentIframe" style="width: 100%; height: 100%; border: none;"></iframe>
+    <button onclick="closeIframe()" style="position: absolute; top: 10px; right: 10px; z-index: 10001;">X</button>
+</div>
+
+<script>
+    function showIframe(url) {
+        document.getElementById('contentIframe').src = url;
+        document.getElementById('iframeContainer').style.display = 'block';
+    }
+
+    function closeIframe() {
+        document.getElementById('iframeContainer').style.display = 'none';
+    }
+</script>
+
+
         <li>
           <a href="#">
             <div class="colored-icon purple">

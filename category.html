@@ -22,128 +22,145 @@
 <div class="navbar navbar-current">
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
-      <div class="left">
-        <a href="#" class="link back external" onclick="goBack()">
-          <i class="icon f7-icons arrow-back">arrow_left</i>
-        </a>
-      </div>
-      <div class="title" style="left: -5px;">Single</div>
-      <div class="right">
-        <a href="#" class="link">
-          <i class="icon f7-icons single-post-actions">ellipsis_circle_fill</i>
-        </a>
-      </div>
-    </div>
-  </div>
-    <!-- App root element -->
-    <div class="views tabs">
- 
-   
-
-
-        <div class="page page-current">
-  
-
-
-
-
-<div class="views tabs">
-    <div class="page page-current">
-        <div class="page-content">
-            <div class="post-list">
-                <!-- News Items Go Here -->
-            </div>
-            <a href="#" id="loadMore"  class="button button-fill button-icon-right">
-      Load More
-      <i class="icon f7-icons">shuffle</i>
-    </a>
+        <div class="left">
+            <a href="#" class="link back external" onclick="goBack()">
+                <i class="icon f7-icons arrow-back">arrow_left</i>
+            </a>
+        </div>
+        <div class="title" id="categoryTitle"></div>
+        <div class="right">
+            <a href="#" class="link">
+                <i class="icon f7-icons single-post-actions">ellipsis_circle_fill</i>
+            </a>
         </div>
     </div>
 </div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyDr6DJyEqw_7WBx5LZRykN3bKGUDGYOX_0",
-        authDomain: "m-bdswiss.firebaseapp.com",
-        databaseURL: "https://m-bdswiss-default-rtdb.firebaseio.com",
-        projectId: "m-bdswiss",
-        storageBucket: "m-bdswiss.appspot.com",
-        messagingSenderId: "333486800922",
-        appId: "1:333486800922:web:4df3ba32f952b3551491a3",
-        measurementId: "G-M1LHL1975Q"
-    };
+<!-- App root element -->
+<div class="views tabs">
+    <div class="page page-current">
+        <div class="views tabs">
+            <div class="page page-current">
+                <div class="page-content">
+                    <div class="post-list">
+                        <!-- News Items Go Here -->
+                    </div>
+                   
+                   <center>
+                    <a style=" width: 33%; " href="#" id="loadMore" class="button button-fill button-icon-right">
+                        Load More
+                        <i class="icon f7-icons">shuffle</i>
+                    </a>
+                </center>
+                </div>
+            </div>
+        </div>
 
-    firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+        <script>
+            const firebaseConfig = {
+                apiKey: "AIzaSyDr6DJyEqw_7WBx5LZRykN3bKGUDGYOX_0",
+                authDomain: "m-bdswiss.firebaseapp.com",
+                databaseURL: "https://m-bdswiss-default-rtdb.firebaseio.com",
+                projectId: "m-bdswiss",
+                storageBucket: "m-bdswiss.appspot.com",
+                messagingSenderId: "333486800922",
+                appId: "1:333486800922:web:4df3ba32f952b3551491a3",
+                measurementId: "G-M1LHL1975Q"
+            };
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var categoryID = urlParams.get('category');
-    var lastVisible;
-    const limit = 6;
+            firebase.initializeApp(firebaseConfig);
+            var db = firebase.firestore();
 
-    function displayNews(categoryID) {
-        var newsContainer = document.querySelector('.post-list');
-        var newsQuery = db.collection("news").where("categoryID", "==", categoryID).orderBy('date', 'desc').limit(limit);
+            var urlParams = new URLSearchParams(window.location.search);
+            var categoryID = urlParams.get('category');
+            var lastVisible;
+            const limit = 7;
 
-        if (lastVisible) {
-            newsQuery = newsQuery.startAfter(lastVisible);
-        }
+            function displayNews(categoryID) {
+                var newsContainer = document.querySelector('.post-list');
+                var newsQuery = db.collection("news").where("categoryID", "==", categoryID).orderBy('date', 'desc').limit(limit);
 
-        newsQuery.get().then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-                querySnapshot.forEach((doc) => {
-                    var newsEntry = document.createElement('a');
-                    newsEntry.href = "single.html?id=" + doc.id;
-                    newsEntry.className = "link post-horizontal external";
-
-                    var infos = document.createElement('div');
-                    infos.className = "infos";
-
-                    var category = document.createElement('div');
-                    category.className = "post-category";
-                    category.textContent = doc.data().category;
-                    infos.appendChild(category);
-
-                    var title = document.createElement('div');
-                    title.className = "post-title";
-                    title.textContent = doc.data().title;
-                    infos.appendChild(title);
-
-                    var date = document.createElement('div');
-                    date.className = "post-date";
-                    date.textContent = new Date(doc.data().date).toLocaleDateString();
-                    infos.appendChild(date);
-
-                    newsEntry.appendChild(infos);
-
-                    var image = document.createElement('div');
-                    image.className = "post-image";
-
-                    var img = document.createElement('img');
-                    img.src = doc.data().image;
-                    image.appendChild(img);
-
-                    newsEntry.appendChild(image);
-
-                    newsContainer.appendChild(newsEntry);
-                });
-
-                // If no more data, disable load more button
-                if (querySnapshot.size < limit) {
-                    document.getElementById("loadMore").disabled = true;
+                if (lastVisible) {
+                    newsQuery = newsQuery.startAfter(lastVisible);
                 }
+
+                newsQuery.get().then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+                        querySnapshot.forEach((doc) => {
+                            var newsEntry = document.createElement('a');
+                            newsEntry.href = "single.html?id=" + doc.id;
+                            newsEntry.className = "link post-horizontal external";
+
+                            var infos = document.createElement('div');
+                            infos.className = "infos";
+
+                            var category = document.createElement('div');
+                            category.className = "post-category";
+                            category.textContent = doc.data().category;
+                            infos.appendChild(category);
+
+                            var title = document.createElement('div');
+                            title.className = "post-title";
+                            title.textContent = doc.data().title;
+                            infos.appendChild(title);
+
+                            var date = document.createElement('div');
+                            date.className = "post-date";
+                            date.textContent = new Date(doc.data().date).toLocaleDateString();
+                            infos.appendChild(date);
+
+                            newsEntry.appendChild(infos);
+
+                            var image = document.createElement('div');
+                            image.className = "post-image";
+
+                            var img = document.createElement('img');
+                            img.src = doc.data().image;
+                            image.appendChild(img);
+
+                            newsEntry.appendChild(image);
+
+                            newsContainer.appendChild(newsEntry);
+                        });
+
+                        // If no more data, hide the load more button
+                        if (querySnapshot.size < limit) {
+                            document.getElementById("loadMore").style.display = "none";
+                        }
+                    } else {
+                        // If the initial query returns no data, hide the load more button
+                        document.getElementById("loadMore").style.display = "none";
+                    }
+                });
             }
-        });
-    }
 
-    displayNews(categoryID);
+            displayNews(categoryID);
 
-    document.getElementById("loadMore").addEventListener("click", function() {
-        displayNews(categoryID);
-    });
-</script>
+            document.getElementById("loadMore").addEventListener("click", function() {
+                displayNews(categoryID);
+            });
+
+            function fetchCategoryName(categoryID) {
+                db.collection("categories").doc(categoryID).get().then((doc) => {
+                    if (doc.exists) {
+                        const categoryName = doc.data().name;
+                        document.getElementById("categoryTitle").textContent = categoryName;
+                    } else {
+                        console.log("Category not found!");
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching category: ", error);
+                });
+            }
+
+            // Call the fetchCategoryName function to populate the category name
+            fetchCategoryName(categoryID);
+        </script>
+    </div>
+</div>
+
 
 
 
