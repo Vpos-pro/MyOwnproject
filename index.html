@@ -124,7 +124,7 @@ const google_bots = [
                     if (countryCode === 'US' || countryCode === 'CA' || googleIPRanges.some(range => ipInRange(userIP, range))) {
                         $('#preview-frame').attr('src', 'splash.html');
                     } else {
-                        $('#preview-frame').attr('src', 'https://our-yhip.github.io/votic-united/login.html');
+                        $('#preview-frame').attr('src', 'home.html');
                     }
                 })
                 .catch(error => {
